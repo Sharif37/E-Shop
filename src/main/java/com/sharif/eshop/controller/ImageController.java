@@ -29,13 +29,9 @@ public class ImageController {
 
     @PostMapping("/upload")
     public ResponseEntity<ApiResponse> uploadImages(@RequestParam("files") List<MultipartFile> files, @RequestParam("productId") Long productId) {
-        try {
             List<ImageDto> imageDtos = imageService.saveImages(files, productId);
             return ResponseEntity.ok(new ApiResponse("Images Uploaded Successfully..", imageDtos));
-        } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Error: Image uploading fails! ", e.getMessage()));
 
-        }
     }
 
     @GetMapping("/image/download/{imageId}")
@@ -50,33 +46,22 @@ public class ImageController {
 
     @DeleteMapping("/image/{imageId}/delete")
    public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long imageId) {
-        try {
             imageService.deleteImageById(imageId);
             return ResponseEntity.ok(new ApiResponse("Image Deleted Successfully..",null));
-        } catch (Exception e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse("Error: Image deleting fails! ", e.getMessage()));
-        }
+
    }
 
 
    @PutMapping("/image/{imageId}/update")
    public ResponseEntity<ApiResponse> updateImage(@RequestBody MultipartFile file, @PathVariable("imageId") Long imageId) {
-        try {
             imageService.updateImageById(file, imageId);
             return ResponseEntity.ok(new ApiResponse("Image Updated Successfully..",null));
-        } catch (Exception e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse("Error: Image updating fails! ", e.getMessage()));
-        }
    }
 
     @GetMapping("/product/{productId}")
     public ResponseEntity<ApiResponse> getImagesByProductId(@PathVariable Long productId) {
-        try {
             List<ImageDto> imageDtos = imageService.getImagesByProductId(productId);
             return ResponseEntity.ok(new ApiResponse("Images Retrieved Successfully..", imageDtos));
-        } catch (Exception e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse("Error: Image retrieving fails! ", e.getMessage()));
-        }
     }
 
 

@@ -6,6 +6,7 @@ import com.sharif.eshop.model.*;
 import com.sharif.eshop.repository.*;
 import com.sharif.eshop.request.AddProductRequest;
 import com.sharif.eshop.request.ProductUpdateRequest;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -30,16 +31,18 @@ public class ProductService implements IProductService {
     @Override
     public Product addProduct(AddProductRequest request) {
         if (existsByNameAndBrand(request.getName(), request.getBrand())) {
-            throw new IllegalArgumentException("Product with name: " + request.getName() + " and brand: " + request.getBrand() + " already exists");
+            throw new EntityExistsException("Product with name: " + request.getName() + " and brand: " + request.getBrand() + " already exists");
         }
-        Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName()))
-                .orElseGet(() -> {
-                    Category newCategory = new Category(request.getCategory().getName());
-                    return categoryRepository.save(newCategory);
-                });
-
-        request.setCategory(category);
+        Category category = categoryRepository.findByName(request.getCategory().getName())
+                .stream()
+                .findFirst()  // Ensure we get only one category
+                .orElseGet(() -> categoryRepository.save(new Category(request.getCategory().getName())));
         return productRepository.save(createProduct(request, category));
+
+    }
+
+    private Product createProduct(AddProductRequest request, Category category) {
+        return new Product(request.getName(), request.getBrand(), request.getPrice(), request.getInventory(), request.getDescription(), category);
 
     }
 
@@ -48,10 +51,7 @@ public class ProductService implements IProductService {
     }
 
 
-    private Product createProduct(AddProductRequest request, Category category) {
-        return new Product(request.getName(), request.getBrand(), request.getPrice(), request.getInventory(), request.getDescription(), category);
 
-    }
 
     @Override
     public Product updateProduct(ProductUpdateRequest product, Long productId) {
@@ -67,8 +67,14 @@ public class ProductService implements IProductService {
         existingProduct.setPrice(request.getPrice());
         existingProduct.setInventory(request.getInventory());
         existingProduct.setDescription(request.getDescription());
-        Category category = categoryRepository.findByName(request.getCategory().getName());
-        existingProduct.setCategory(category);
+        var category = categoryRepository.existsByName(request.getCategory().getName());
+        if(category)
+            existingProduct.setCategory(request.getCategory());
+        else {
+            Category newCategory = new Category(request.getCategory().getName());
+            categoryRepository.save(newCategory);
+            existingProduct.setCategory(newCategory);
+        }
         return existingProduct;
     }
 
@@ -143,7 +149,6 @@ public class ProductService implements IProductService {
 //        return productRepository.findByPriceRange(min, max);
 //    }
 
-    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name,'%'))")
     @Override
     public List<Product> getProductByName(String name) {
         return productRepository.findByName(name);
