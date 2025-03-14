@@ -4,6 +4,7 @@ import com.sharif.eshop.dto.ProductDto;
 import com.sharif.eshop.model.Category;
 import com.sharif.eshop.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import javax.swing.plaf.basic.BasicIconFactory;
 import java.math.BigDecimal;
@@ -22,6 +23,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 //    List<Product> findByPriceRange(BigDecimal min, BigDecimal max);
 
+    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name,'%'))")
     List<Product> findByName(String name);
 
     boolean existsByNameAndBrand(String name, String brand);

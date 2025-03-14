@@ -4,6 +4,7 @@ import com.sharif.eshop.model.Category;
 import com.sharif.eshop.repository.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,8 +47,9 @@ public class CategoryService implements ICategoryService {
         return categoryRepository.findAll();
     }
 
+
     @Override
-    public Category findCategoryByName(String name) {
+    public List<Category> findCategoryByName(String name) {
         return categoryRepository.findByName(name);
     }
 

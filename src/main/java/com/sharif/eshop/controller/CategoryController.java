@@ -25,64 +25,40 @@ public class CategoryController {
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAllCategories() {
-        try {
             List<Category> categories = categoryService.getAllCategories();
             return ResponseEntity.ok(new ApiResponse("Categories fetched successfully", categories));
-        } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse("Error occurred while fetching categories", e.getMessage()));
-        }
+
     }
 
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> addCategory(@RequestBody Category category) {
-        try {
             Category theCategory = categoryService.addCategory(category);
             return ResponseEntity.ok(new ApiResponse("Category added successfully", theCategory));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(CONFLICT).body(new ApiResponse("Error adding category!", e.getMessage()));
-        }
-
-
     }
 
-    @GetMapping("/category/{categoryId}/category")
+    @GetMapping("/category/id/{categoryId}")
     public ResponseEntity<ApiResponse> getCategoryById(@PathVariable Long categoryId) {
-        try {
             Category category = categoryService.findCategoryById(categoryId);
             return ResponseEntity.ok(new ApiResponse("Category fetched successfully", category));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse("Category not found!", e.getMessage()));
-        }
     }
 
-    @DeleteMapping("/category/{categoryId}/category")
+    @DeleteMapping("/category/id/{categoryId}")
     public ResponseEntity<ApiResponse> deleteCategoryById(@PathVariable Long categoryId) {
-        try {
             categoryService.deleteCategory(categoryId);
             return ResponseEntity.ok(new ApiResponse("Category deleted successfully", null));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse("Category not found!", e.getMessage()));
-        }
     }
 
-    @PutMapping("/category/{categoryId}/category")
+    @PutMapping("/category/id/{categoryId}")
     public ResponseEntity<ApiResponse> updateCategory(@RequestBody Category category, @PathVariable Long categoryId) {
-        try {
             Category theCategory = categoryService.updateCategory(category, categoryId);
             return ResponseEntity.ok(new ApiResponse("Category updated successfully", theCategory));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse("Category not found!", e.getMessage()));
-        }
+
     }
 
-    @GetMapping("/category/{categoryName}/category")
+    @GetMapping("/category/name/{categoryName}")
     public ResponseEntity<ApiResponse> getCategoryByName(@PathVariable String categoryName) {
-        try {
-            Category category = categoryService.findCategoryByName(categoryName);
+            List<Category> category = categoryService.findCategoryByName(categoryName);
             return ResponseEntity.ok(new ApiResponse("Category fetched successfully", category));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse("Category not found!", e.getMessage()));
-        }
     }
 
 
