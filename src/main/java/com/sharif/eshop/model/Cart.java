@@ -1,5 +1,6 @@
 package com.sharif.eshop.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,9 +32,24 @@ public class Cart {
         this.cartItems.remove(cartItem);
         cartItem.setCart(null);
         updateTotalAmount();
+
     }
 
     private void updateTotalAmount() {
+        this.totalAmount = this.cartItems.stream()
+                .map(CartItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+    }
+
+    public void addItem(CartItem cartItem) {
+        this.cartItems.add(cartItem);
+        cartItem.setCart(this);
+        updateTotalAmount();
+    }
+
+    public void clearCart() {
+        this.cartItems.clear();
+        updateTotalAmount();
     }
 }

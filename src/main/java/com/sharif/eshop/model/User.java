@@ -1,5 +1,7 @@
 package com.sharif.eshop.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +19,7 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long userId;
     private String firstName;
     private String lastName;
@@ -26,11 +29,14 @@ public class User {
     private String password;
 
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Cart cart;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> order;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Cart cart;
+
+
 
     @ManyToMany(fetch = FetchType.EAGER,
             cascade = {
@@ -40,7 +46,7 @@ public class User {
             CascadeType.REFRESH
     })
     @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id",referencedColumnName = "userId"),
+            joinColumns = @JoinColumn(name = "user_id",referencedColumnName = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id",referencedColumnName = "id"))
     private Collection<Role> roles = new HashSet<>();
 }

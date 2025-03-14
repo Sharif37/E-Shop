@@ -1,5 +1,6 @@
 package com.sharif.eshop.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sharif.eshop.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
