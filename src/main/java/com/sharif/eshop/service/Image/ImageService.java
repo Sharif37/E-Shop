@@ -74,6 +74,7 @@ public class ImageService implements IImageService{
                 ImageDto imageDto = new ImageDto();
                 imageDto.setId(savedImage.getId());
                 imageDto.setFilename(savedImage.getFilename());
+                imageDto.setDownloadUrl(downloadUrl);
                 saveImages.add(imageDto);
             } catch (Exception e) {
                 throw new RuntimeException("Error while saving image with product id: " + productId + "\n" + e.getMessage());
