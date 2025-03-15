@@ -10,6 +10,9 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +27,8 @@ public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final OrderRepository orderRepository;
+    private final PasswordEncoder passwordEncoder;
+
 
     @Override
     public User createUser(CreateUserRequest request) {
@@ -34,7 +39,7 @@ public class UserService implements IUserService {
                     user.setFirstName(newUser.getFirstName());
                     user.setLastName(newUser.getLastName());
                     user.setEmail(newUser.getEmail());
-                    user.setPassword(newUser.getPassword());
+                    user.setPassword(passwordEncoder.encode(newUser.getPassword()));
                     return userRepository.save(user);
                 })
                 .orElseThrow(() -> new EntityExistsException("User with email : " + request.getEmail() + " already exists!"));
@@ -182,6 +187,15 @@ public class UserService implements IUserService {
         imageDto.setFilename(image.getFilename());
         imageDto.setDownloadUrl(image.getDownloadUrl());
         return imageDto;
+    }
+
+
+    @Override
+    public User getAuthenticatedUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return Optional.ofNullable(userRepository.findByEmail(email))
+                .orElseThrow(() -> new EntityNotFoundException("Log in Required!"));
     }
 
 
