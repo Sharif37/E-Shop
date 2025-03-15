@@ -1,4 +1,4 @@
-package com.sharif.eshop.security;
+package com.sharif.eshop.security.user;
 
 import com.sharif.eshop.model.User;
 import com.sharif.eshop.repository.UserRepository;
