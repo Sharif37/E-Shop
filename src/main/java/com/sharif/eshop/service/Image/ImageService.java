@@ -5,9 +5,7 @@ import com.sharif.eshop.model.Image;
 import com.sharif.eshop.model.Product;
 import com.sharif.eshop.repository.ImageRepository;
 import com.sharif.eshop.service.product.IProductService;
-import com.sharif.eshop.service.product.ProductService;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.sql.rowset.serial.SerialBlob;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -74,7 +71,7 @@ public class ImageService implements IImageService{
                 ImageDto imageDto = new ImageDto();
                 imageDto.setId(savedImage.getId());
                 imageDto.setFilename(savedImage.getFilename());
-                imageDto.setDownloadUrl(downloadUrl);
+                imageDto.setDownloadUrl(savedImage.getDownloadUrl());
                 saveImages.add(imageDto);
             } catch (Exception e) {
                 throw new RuntimeException("Error while saving image with product id: " + productId + "\n" + e.getMessage());
